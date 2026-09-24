@@ -1,0 +1,38 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .services.base_service import EmergencyIncidentService
+from .serializers import emergency_serializer, create_emergency_serializer
+
+class EmergencyIncidentView(APIView) :
+   
+    # permission_classes = [IsAuthenticated]
+  
+    def __init__(self, *args, **kwargs) :
+        super().__init__(*args, **kwargs)
+        self.incident_data_service = EmergencyIncidentService()
+
+    def get(self, request, incident_id=None) :
+        
+        if incident_id is not None :
+            incident   = self.incident_data_service.get_incident(incident_id = incident_id)
+            serializer = emergency_serializer(incident, many=False)
+            return Response(serializer.data, status=201)
+        
+        incidents  = self.incident_data_service.incident_list()
+        serializer = emergency_serializer(incidents, many = True)
+        return Response(serializer.data, status=201)
+    
+    def post(self, request) :
+        
+        try:
+            report_data = self.incident_data_service.create_incident(
+            data = request.data,
+            reporter = request.user
+        )
+        
+            return Response(report_data)
+        except Exception as error:
+            return Response({"error": str(error)}, status=400)
+        
+    
