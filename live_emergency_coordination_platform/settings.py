@@ -3,7 +3,10 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
+import dj_database_url
 from dotenv import load_dotenv
+
+
 
 load_dotenv() 
 
@@ -63,13 +66,14 @@ TEMPLATES = [
     },
 ]
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -89,7 +93,8 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-STATIC_URL = 'static/'
+STATIC_URL  = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles") 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {

@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from .services.user_services import UserService, IncidentService
-# from apps.Incident.models import EmergencyIncident
+from apps.Incident.serializers import emergency_serializer
 class UserServiceView(APIView) :
 
     def __init__(self, *args, **kwargs) :
@@ -28,7 +29,8 @@ class IncidentServiceView(APIView):
     def get(self, request, incident_id=None):
         if incident_id:
             incident = self.incident_service.get_incident_by_id(incident_id)
-            return Response({"incident": incident})
+            serializer = emergency_serializer(incident)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             incidents = self.incident_service.get_all_incidents(user=request.user)
             return Response({"incidents": incidents})

@@ -12,4 +12,6 @@ urlpatterns= [
 
     path("user-service/", views.UserServiceView.as_view()),
     path("incident-service/", views.IncidentServiceView.as_view()),
+    path("incident-service/<int:incident_id>/", views.IncidentServiceView.as_view()),
+    
 ]
